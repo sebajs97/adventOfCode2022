@@ -6,6 +6,7 @@
 
 class Position():
     def __init__(self, coords: list, height: int,  visited = False,):
+        # Clase Posición que guarda la altura, coordenadas, estado (visitado o no) y el costo de llegar a este punto
         self.x = coords[0]
         self.y = coords[1]
         self.height = height
@@ -15,13 +16,14 @@ class Position():
 ### FUNCIONES AUXILIARES
 
 def format_input(input: list):
+    # Crea las posiciones en una lista de listas. La altura la define la letra (a=0, b=1, c=2..)
+    # retorna la lista de listas, el punto de inicio y el punto final
     output = []
     for j in range(len(input)):
         output.append([])
         for i in range(len(input[0])):
             char = input[j][i]
             height = ord(char)-97
-            start = False
             if char == 'S':
                 char = 'a'
                 start = True
@@ -72,7 +74,6 @@ def find_shortest_path(datos: list, startPoint: Position, end: list) -> int:
         datos[currentPosition.y][currentPosition.x].visited = True
     return datos[end.y][end.x].cost
     
-
 def get_unvisited(datos: list):
     unvisited = []
     for fila in datos:
@@ -82,7 +83,6 @@ def get_unvisited(datos: list):
     return unvisited
 
 def extract_min_from_unvisited(unvisited: list):
-    # minCost = unvisited[0].cost
     minPosition = 0
     for i in range(len(unvisited)):
         if unvisited[i].cost < unvisited[minPosition].cost:
