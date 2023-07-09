@@ -36,15 +36,26 @@ def format_input(input: list):
             output[j].append(Position([i, j], height))
     return output, startPoint, end
 
-def find_shortest_path(datos: list, startPoint: Position, end: list) -> int:
+def find_shortest_path(datos: list, startPoint: Position, end: list, currentMinLength = None, reviewedStartPoints = None) -> int:
+    # Encuentra el camino más corto hacia el punto de salida mediante el algoritmo de Djikstra
+
     datos[startPoint.y][startPoint.x].cost = 0
-    while (not datos[end.y][end.x].visited) and (len(get_unvisited(datos))>=0):
-        unvisited = get_unvisited(datos)
-        currentPosition = extract_min_from_unvisited(unvisited)
+    while (not datos[end.y][end.x].visited) and (len(get_unvisited(datos))>=0): # Mientras haya celdsa por visitar que no sean la actual
+        unvisited = get_unvisited(datos) # Obtener celdas no visitadas
+        currentPosition = extract_min_from_unvisited(unvisited) # Obtener el punto con menor costo que no se haya visitado
         morePaths = check_if_there_are_no_more_paths(unvisited)
-        if not morePaths:
+        if not morePaths: # En caso de que no hayan más caminos, terminar el ciclo
             break
 
+        # if reviewedStartPoints != None:
+        #     if [currentPosition.x, currentPosition.y] in reviewedStartPoints:
+        #         # Si ya este punto fue analizado como un punto de inicio
+        #         return None
+
+        if currentMinLength != None: # Si la longitud actual es mayor que la mínima registrada, descartar camino
+            if currentPosition.cost >= currentMinLength:
+                return None
+        
         x = currentPosition.x
         y = currentPosition.y
         ## Revisar vecinos
@@ -114,11 +125,21 @@ def problem1(input: list):
 def problem2(input: list):
     datos, _, end = format_input(input)
     startingPoints = get_starting_points(datos)
-    pathLengths = []
+    # pathLengths = []
+    # for startingPoint in startingPoints:
+    #     datos, _, end = format_input(input)
+    #     pathLengths.append(find_shortest_path(datos, startingPoint, end))
+    # print(min(pathLengths))
+    minLength = 999999999
+    reviewedStartPoints = []
     for startingPoint in startingPoints:
         datos, _, end = format_input(input)
-        pathLengths.append(find_shortest_path(datos, startingPoint, end))
-    print(min(pathLengths))
+        currentPathLength = find_shortest_path(datos, startingPoint, end, minLength, reviewedStartPoints)
+        reviewedStartPoints.append([startingPoint.x, startingPoint.y])
+        if currentPathLength != None:
+            if currentPathLength < minLength:
+                minLength = currentPathLength
+    print(minLength)
 
 if __name__=='__main__':
     input = [line.removesuffix('\n') for line in open('solutions/Day 12/input12_1.txt', 'r').readlines()]
